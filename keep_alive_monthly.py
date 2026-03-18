@@ -1,37 +1,34 @@
-import time
-import datetime
-from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.common.keys import Keys
+import requests
+import logging
+import configparser
 
-# Set your login credentials
-USERNAME = 'your_username'
-PASSWORD = 'your_password'
+# Configure logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
-# Function to perform login
+# Load configuration
+config = configparser.ConfigParser()
+config.read('config.ini')
+USERNAME = config['DEFAULT']['username']
+PASSWORD = config['DEFAULT']['password']
 
-def login():
-    driver = webdriver.Chrome()
-    driver.get('https://your_login_page.com')
-    time.sleep(2)  # wait for the page to load
+def auto_login():
+    try:
+        logging.info('Starting the auto-login process...')
+        login_url = 'https://example.com/login'  # Replace with actual login URL
+        payload = {'username': USERNAME, 'password': PASSWORD}
 
-    username_input = driver.find_element(By.NAME, 'username')
-    password_input = driver.find_element(By.NAME, 'password')
-    login_button = driver.find_element(By.NAME, 'login')
+        # Send login request
+        response = requests.post(login_url, data=payload)
+        response.raise_for_status()  # Raises an HTTPError for bad responses
 
-    username_input.send_keys(USERNAME)
-    password_input.send_keys(PASSWORD)
-    login_button.click()
-    time.sleep(5)  # wait to ensure the login process completes
+        if 'success' in response.text:
+            logging.info('Login successful!')
+            # Proceed with the rest of the script
+        else:
+            logging.error('Login failed: Credentials are incorrect.')
 
-    driver.quit()
-
-# Schedule the login every month
+    except requests.exceptions.RequestException as e:
+        logging.error(f'An error occurred while trying to login: {e}')  
 
 if __name__ == '__main__':
-    while True:
-        current_time = datetime.datetime.now()
-        if current_time.day == 1:  # Login on the first day of every month
-            login()
-            time.sleep(2592000)  # wait for 30 days
-        time.sleep(86400)  # check every day
+    auto_login()
