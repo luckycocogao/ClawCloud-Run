@@ -1,0 +1,1 @@
+{\n  \"email\": \"ClawCloud_email@example.com\",\n  \"password\": \"your_password\",\n  \"url\": \"https://your_clawcloud_url.com\",\n  \"telegram\": {\n    \"bot_token\": \"your_telegram_bot_token\",\n    \"chat_id\": \"your_telegram_chat_id\"\n  }\n}
